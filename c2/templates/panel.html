@@ -3,39 +3,123 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ghost · panel</title>
+<title>ghost · c2</title>
 <style>
-  body { font-family: ui-monospace, Menlo, monospace; background:#0d0f12; color:#d7dae0; margin:0; padding:24px; }
-  h1 { font-size:18px; letter-spacing:1px; color:#8ea0b8; margin:0 0 20px; }
-  a { color:#7fd3ff; text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  table { border-collapse:collapse; width:100%; }
-  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid #1c2026; font-size:13px; }
-  th { color:#7c8899; font-weight:400; }
-  .cat { color:#e0c279; }
-  .muted { color:#5a6472; font-size:11px; }
-  .empty { color:#5a6472; padding:16px 0; }
-  .live { color:#8fd48a; font-size:11px; }
+  :root {
+    --bg: #080b0d;
+    --panel: #0c1116;
+    --border: #123;
+    --green: #00ff9c;
+    --green-dim: #0a6;
+    --amber: #ffb347;
+    --red: #ff3b3b;
+    --text: #c8d6e5;
+    --muted: #4a5a6b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 20px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--bg); color: var(--text);
+    font-size: 13px; line-height: 1.5;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 9999;
+    background: repeating-linear-gradient(
+      0deg, rgba(0,255,156,0.03) 0px, rgba(0,255,156,0.03) 1px,
+      transparent 1px, transparent 3px
+    );
+  }
+  h1 {
+    font-size: 14px; font-weight: 500; letter-spacing: 3px;
+    color: var(--green); margin: 0 0 24px;
+    text-transform: uppercase;
+  }
+  h1::before { content: "▌ "; color: var(--green); animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.3 } }
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-shadow: 0 0 8px var(--green); }
+  .hdr {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 12px; margin-bottom: 24px;
+  }
+  .hdr .live {
+    color: var(--green); font-size: 11px; letter-spacing: 2px;
+    border: 1px solid var(--green); padding: 2px 8px;
+  }
+  .hdr .live::before { content: "● "; animation: pulse 1.2s infinite; }
+  .stat-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-bottom: 24px;
+  }
+  .stat {
+    border: 1px solid var(--border); padding: 12px; background: var(--panel);
+    position: relative;
+  }
+  .stat .lbl { color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+  .stat .val { color: var(--green); font-size: 22px; font-weight: 500; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; padding: 8px 10px; font-weight: 400;
+    color: var(--muted); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  td { padding: 10px; border-bottom: 1px solid #0f1419; font-size: 12px; }
+  tr:hover td { background: #0e1419; }
+  tr:hover td:first-child::before {
+    content: "> "; color: var(--green); margin-left: -14px;
+  }
+  .cat {
+    display: inline-block; border: 1px solid var(--green-dim); color: var(--green);
+    padding: 1px 6px; margin: 1px 3px 1px 0; font-size: 10px; letter-spacing: 1px;
+  }
+  .cat .n { color: var(--muted); margin-left: 3px; }
+  .muted { color: var(--muted); font-size: 11px; }
+  .empty {
+    color: var(--muted); padding: 60px 0; text-align: center; letter-spacing: 2px;
+  }
+  .empty::before {
+    content: "█"; color: var(--green); display: block; margin-bottom: 12px;
+    animation: pulse 1.2s infinite;
+  }
+  .cursor::after {
+    content: "▊"; color: var(--green); animation: pulse 0.8s infinite;
+  }
 </style>
 </head>
 <body>
-<h1>ghost · devices <span class="live">● live</span></h1>
-{% if not devices %}
-<div class="empty">no exfil yet. waiting for a device to check in…</div>
-{% else %}
+<div class="hdr">
+  <h1>ghost · c2</h1>
+  <div class="live">live</div>
+</div>
+
+{% if devices %}
+<div class="stat-row">
+  <div class="stat"><div class="lbl">devices</div><div class="val">{{ devices|length }}</div></div>
+  <div class="stat"><div class="lbl">files</div><div class="val">{{ devices|sum(attribute='files') }}</div></div>
+  <div class="stat"><div class="lbl">bytes</div><div class="val">{{ devices|sum(attribute='bytes') }}</div></div>
+</div>
+
 <table>
+<thead>
 <tr><th>device</th><th>files</th><th>bytes</th><th>categories</th><th>last seen</th></tr>
+</thead>
+<tbody>
 {% for d in devices %}
 <tr>
   <td><a href="/panel/device/{{ d.id }}">{{ d.id }}</a></td>
   <td>{{ d.files }}</td>
   <td>{{ d.bytes }}</td>
-  <td>{% for c, v in d.cats.items() %}<span class="cat">{{ c }}</span>({{ v.files }})&nbsp;{% endfor %}</td>
+  <td>{% for c, v in d.cats.items() %}<span class="cat">{{ c }}<span class="n">{{ v.files }}</span></span>{% endfor %}</td>
   <td class="muted">{{ d.mtime }}</td>
 </tr>
 {% endfor %}
+</tbody>
 </table>
+{% else %}
+<div class="empty">awaiting first beacon<span class="cursor"></span></div>
 {% endif %}
+
 <script>setTimeout(() => location.reload(), 5000);</script>
 </body>
 </html>
