@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ghost · {{ name }}</title>
+<style>
+  body { font-family: ui-monospace, Menlo, monospace; background:#0d0f12; color:#d7dae0; margin:0; padding:24px; }
+  h1 { font-size:14px; color:#8ea0b8; margin:0 0 4px; word-break:break-all; }
+  a { color:#7fd3ff; text-decoration:none; }
+  .tabs a { display:inline-block; padding:3px 8px; margin:2px; border:1px solid #1c2026; border-radius:3px; font-size:12px; }
+  .tabs a.active { background:#1c2026; color:#b5e08a; }
+  pre { background:#111418; padding:14px; border-radius:4px; overflow:auto; max-height:75vh; font-size:12px; line-height:1.5; }
+  table { border-collapse:collapse; width:100%; font-size:12px; }
+  th,td { text-align:left; padding:5px 8px; border-bottom:1px solid #1c2026; vertical-align:top; }
+  th { color:#7c8899; font-weight:400; }
+  img { max-width:100%; }
+  .muted { color:#5a6472; font-size:11px; }
+</style>
+</head>
+<body>
+<h1>{{ name }} <span class="muted">({{ size }} bytes)</span></h1>
+<div class="muted"><a href="/panel">panel</a> · <a href="/panel/device/{{ device_id }}">{{ device_id }}</a> · <a href="/panel/raw/{{ device_id }}/{{ category }}/{{ name }}">[dl]</a></div>
+
+{% if mode == "text" %}
+  <pre>{{ content }}</pre>
+
+{% elif mode == "binary" %}
+  <div class="muted">binary file</div>
+
+{% elif mode == "db" %}
+  <div class="tabs">
+    {% for t in tables %}<a href="?t={{ t }}" class="{% if t == current_table %}active{% endif %}">{{ t }}</a>{% endfor %}
+  </div>
+  {% if current_table %}
+    <div class="muted">showing up to 200 rows from <b>{{ current_table }}</b></div>
+    <table>
+      <tr>{% for c in cols %}<th>{{ c }}</th>{% endfor %}</tr>
+      {% for r in rows %}<tr>{% for v in r %}<td>{{ v }}</td>{% endfor %}</tr>{% endfor %}
+    </table>
+  {% else %}
+    <div class="muted">pick a table above</div>
+  {% endif %}
+
+{% elif mode == "db_error" %}
+  <pre>{{ content }}</pre>
+{% endif %}
+</body>
+</html>

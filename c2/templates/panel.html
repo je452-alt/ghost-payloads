@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ghost · panel</title>
+<style>
+  body { font-family: ui-monospace, Menlo, monospace; background:#0d0f12; color:#d7dae0; margin:0; padding:24px; }
+  h1 { font-size:18px; letter-spacing:1px; color:#8ea0b8; margin:0 0 20px; }
+  a { color:#7fd3ff; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  table { border-collapse:collapse; width:100%; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid #1c2026; font-size:13px; }
+  th { color:#7c8899; font-weight:400; }
+  .cat { color:#e0c279; }
+  .muted { color:#5a6472; font-size:11px; }
+  .empty { color:#5a6472; padding:16px 0; }
+  .live { color:#8fd48a; font-size:11px; }
+</style>
+</head>
+<body>
+<h1>ghost · devices <span class="live">● live</span></h1>
+{% if not devices %}
+<div class="empty">no exfil yet. waiting for a device to check in…</div>
+{% else %}
+<table>
+<tr><th>device</th><th>files</th><th>bytes</th><th>categories</th><th>last seen</th></tr>
+{% for d in devices %}
+<tr>
+  <td><a href="/panel/device/{{ d.id }}">{{ d.id }}</a></td>
+  <td>{{ d.files }}</td>
+  <td>{{ d.bytes }}</td>
+  <td>{% for c, v in d.cats.items() %}<span class="cat">{{ c }}</span>({{ v.files }})&nbsp;{% endfor %}</td>
+  <td class="muted">{{ d.mtime }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+<script>setTimeout(() => location.reload(), 5000);</script>
+</body>
+</html>

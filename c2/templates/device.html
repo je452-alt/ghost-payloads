@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ghost · {{ device_id }}</title>
+<style>
+  body { font-family: ui-monospace, Menlo, monospace; background:#0d0f12; color:#d7dae0; margin:0; padding:24px; }
+  h1 { font-size:16px; color:#8ea0b8; margin:0 0 4px; }
+  h2 { font-size:14px; color:#e0c279; margin:24px 0 6px; }
+  a { color:#7fd3ff; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  table { border-collapse:collapse; width:100%; }
+  th,td { text-align:left; padding:6px 10px; border-bottom:1px solid #1c2026; font-size:13px; }
+  th { color:#7c8899; font-weight:400; }
+  .muted { color:#5a6472; font-size:11px; }
+  .db { color:#b5e08a; }
+  .img { color:#c99adb; }
+</style>
+</head>
+<body>
+<h1>device: {{ device_id }}</h1>
+<div class="muted"><a href="/panel">← all devices</a></div>
+
+{% for c in cats %}
+<h2>{{ c.name }} ({{ c.entries|length }})</h2>
+{% if c.entries %}
+<table>
+<tr><th>name</th><th>bytes</th><th>original path</th><th>description</th></tr>
+{% for e in c.entries %}
+<tr>
+  <td>
+    {% if e.is_db %}<span class="db">●</span>{% elif e.is_img %}<span class="img">▣</span>{% endif %}
+    <a href="/panel/file/{{ device_id }}/{{ c.name }}/{{ e.name }}">{{ e.name }}</a>
+    &nbsp;<a class="muted" href="/panel/raw/{{ device_id }}/{{ c.name }}/{{ e.name }}">[dl]</a>
+  </td>
+  <td>{{ e.bytes }}</td>
+  <td class="muted">{{ e.orig_path }}</td>
+  <td class="muted">{{ e.description }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}<div class="muted">empty</div>{% endif %}
+{% endfor %}
+<script>setTimeout(() => location.reload(), 10000);</script>
+</body>
+</html>
